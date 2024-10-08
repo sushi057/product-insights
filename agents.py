@@ -52,8 +52,16 @@ def query_agent(state: AgentStateGraph):
 
 
 def crm_agent(state: AgentStateGraph):
-    crm_agent_tools = []
-    crm_llm_with_tools = llm.bind_tools(crm_agent_tools)
+    # Append a tool message to the last route from query agent
+    last_tool_call_id = state["messages"][-1].tool_calls[0]["id"]
+    query_route_tool_message = ToolMessage(
+        tool_call_id=last_tool_call_id,
+        content="The CRM Agent will now look for necessary information",
+    )
+    state["messages"].append(query_route_tool_message)
+
+    # crm_agent_tools = []
+    crm_llm_with_tools = llm
 
     crm_agent_runnable = crm_agent_prompt_template | crm_llm_with_tools
 
@@ -82,8 +90,15 @@ def csm_agent(state: AgentStateGraph):
 
 
 def helpdesk_agent(state: AgentStateGraph):
+    # Append a tool message to the last route from query agent
+    last_tool_call_id = state["messages"][-1].tool_calls[0]["id"]
+    query_route_tool_message = ToolMessage(
+        tool_call_id=last_tool_call_id,
+        content="The Help Desk Agent will now look for necessary information",
+    )
+    state["messages"].append(query_route_tool_message)
     # helpdesk_agent_tools = []
-    helpdesk_llm_with_tools = llm.bind_tools()
+    helpdesk_llm_with_tools = llm
 
     helpdesk_agent_runnable = helpdesk_agent_prompt_template | helpdesk_llm_with_tools
 
@@ -93,8 +108,16 @@ def helpdesk_agent(state: AgentStateGraph):
 
 
 def chatdata_agent(state: AgentStateGraph):
+    # Append a tool message to the last route from query agent
+    last_tool_call_id = state["messages"][-1].tool_calls[0]["id"]
+    query_route_tool_message = ToolMessage(
+        tool_call_id=last_tool_call_id,
+        content="The Chat Data Agent will now look for necessary information",
+    )
+    state["messages"].append(query_route_tool_message)
+
     # chatdata_agent_tools = []
-    chatdata_llm_with_tools = llm.bind_tools()
+    chatdata_llm_with_tools = llm
 
     chatdata_agent_runnable = chatdata_agent_prompt_template | chatdata_llm_with_tools
 

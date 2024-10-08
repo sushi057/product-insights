@@ -14,6 +14,13 @@ from agents import (
 )
 
 
+def route_entry_point(state: AgentStateGraph):
+    if "user_info" in state:
+        return "query_agent"
+    else:
+        return "fetch_user_info"
+
+
 def route_query_agent(state: AgentStateGraph):
     last_message = state["messages"][-1]
     if not last_message.tool_calls:
@@ -39,7 +46,12 @@ def create_graph():
     graph_builder.add_node("chatdata_agent", chatdata_agent)
     graph_builder.add_node("insights_agent", insights_agent)
 
-    graph_builder.add_edge(START, "fetch_user_info")
+    # graph_builder.add_edge(START, "fetch_user_info")
+    # graph_builder.set_entry_point("query_agent")
+    graph_builder.set_conditional_entry_point(
+        route_entry_point,
+        {"fetch_user_info": "fetch_user_info", "query_agent": "query_agent"},
+    )
     graph_builder.add_edge("fetch_user_info", "query_agent")
     graph_builder.add_conditional_edges(
         "query_agent",
