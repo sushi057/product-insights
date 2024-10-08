@@ -1,3 +1,4 @@
+from datetime import datetime
 from langchain_core.prompts import ChatPromptTemplate
 
 query_agent_prompt_template = ChatPromptTemplate.from_messages(
@@ -16,13 +17,16 @@ You are the **Query Agent** in a Customer Insights AI System. Your task is to an
 
 1. **Understand the Query:** Read and comprehend the user's input.
 2. **Determine Relevance:** Decide which agent(s) are relevant based on the content and intent of the query.
-3. **Route Appropriately:** Specify which agent(s) should handle the query.
+3. **Route Appropriately:** Specify which agent(s) should handle the query and use the provided user info.
 4. **Provide Context:** If necessary, extract and pass relevant context or keywords to the selected agent(s).
+
+User Info: <User>{user_info}</User>
+Current time: {time}
             """,
         ),
         ("placeholder", "{messages}"),
     ]
-)
+).partial(time=datetime.now())
 
 crm_agent_prompt_template = ChatPromptTemplate.from_messages(
     [
@@ -54,6 +58,8 @@ csm_agent_prompt_template = ChatPromptTemplate.from_messages(
 1. **Analyze Context:** Examine the context or keywords provided by the Query Agent.
 2. **Retrieve Information:** Access relevant CSM data such as onboarding progress, NPS scores, support ticket histories, and customer engagement metrics.
 3. **Provide Clear Response:** Deliver the information in an organized and understandable format, tailored to the user's query.
+
+Provide fake response for now.
 """,
         ),
         ("placeholder", "{messages}"),
@@ -112,9 +118,13 @@ insights_agent_prompt_template = ChatPromptTemplate.from_messages(
 3. **Formulate Response:** Craft a clear, concise, and insightful response that addresses the user's original query, leveraging the combined information from all relevant agents.
 4. **Ensure Clarity:** Present the insights in an organized manner, making them easy to understand and actionable.
 
-**CRM Agent Response:** "{crm_response}"
-**CSM Agent Response:** "{csm_response}"
-**ChatData Agent Response:** "{chatdata_response}"
+**CRM Agent Response:** "{crm_agent_response}"
+**CSM Agent Response:** "{csm_agent_response}"
+**ChatData Agent Response:** "{chatdata_agent_response}"
+**HelpDesk Agent Response:** "{helpdesk_agent_response}"
+
+Provide the integrated insights with the only responses you have.
+Do not mention the agents' names.
 """,
         ),
         ("placeholder", "{messages}"),

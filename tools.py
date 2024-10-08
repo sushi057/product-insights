@@ -35,3 +35,6 @@ class ToChatDataAgent(BaseModel):
     """
 
     user_id: str = Field(..., description="user id of the customer to fetch Chat Data")
+
+
+# CRM Agent Tools
