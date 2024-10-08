@@ -2,3 +2,4 @@ langchain
 langchain-openai
 langgraph
 langsmith
+pydantic
