@@ -1,6 +1,4 @@
 # Visualize graph
-
-
 def visualize_graph(graph):
-    with open("graph.png", "r") as f:
-        f.write(graph.get_graph(x_ray=True).draw_mermaid_png())
+    with open("graph.png", "wb") as f:
+        f.write(graph.get_graph(xray=True).draw_mermaid_png())

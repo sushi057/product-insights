@@ -20,5 +20,7 @@ while True:
         print("goodbye")
         break
 
-    for event in graph.stream({"messages": ("user", user_input)}, stream_mode="values"):
+    for event in graph.stream(
+        {"messages": ("user", user_input)}, config, stream_mode="values"
+    ):
         event["messages"][-1].pretty_print()
