@@ -15,12 +15,6 @@ from prompts import (
 llm = ChatOpenAI(model="gpt-4o")
 
 
-# class Agent:
-#     def __init__(self, state: AgentStateGraph, llm):
-#         self.state = state
-#         self.llm = ChatOpenAI(model="gpt-4o")
-
-
 def fetch_user_info(state: AgentStateGraph, config: RunnableConfig):
     # configurable = config.get("configurable")
     # user_id = configurable["user_id"]
@@ -56,18 +50,16 @@ def crm_agent(state: AgentStateGraph):
     last_tool_call_id = state["messages"][-1].tool_calls[0]["id"]
     query_route_tool_message = ToolMessage(
         tool_call_id=last_tool_call_id,
-        content="The CRM Agent will now look for necessary information",
+        content="The CRM Agent will now look for information in the CRM data.",
     )
     state["messages"].append(query_route_tool_message)
 
     # crm_agent_tools = []
     crm_llm_with_tools = llm
-
     crm_agent_runnable = crm_agent_prompt_template | crm_llm_with_tools
-
     response = crm_agent_runnable.invoke(state)
 
-    return {**state, "crm_agent_response": response}
+    return {**state, "messages": response, "crm_agent_response": response}
 
 
 def csm_agent(state: AgentStateGraph):
@@ -81,12 +73,10 @@ def csm_agent(state: AgentStateGraph):
 
     # csm_agent_tools = []
     csm_llm_with_tools = llm
-
     csm_agent_runnable = csm_agent_prompt_template | csm_llm_with_tools
-
     response = csm_agent_runnable.invoke(state)
 
-    return {**state, "csm_agent_response": response}
+    return {**state, "messages": response, "csm_agent_response": response}
 
 
 def helpdesk_agent(state: AgentStateGraph):
@@ -97,14 +87,13 @@ def helpdesk_agent(state: AgentStateGraph):
         content="The Help Desk Agent will now look for necessary information",
     )
     state["messages"].append(query_route_tool_message)
+
     # helpdesk_agent_tools = []
     helpdesk_llm_with_tools = llm
-
     helpdesk_agent_runnable = helpdesk_agent_prompt_template | helpdesk_llm_with_tools
-
     response = helpdesk_agent_runnable.invoke(state)
 
-    return {**state, "helpdesk_agent_response": response}
+    return {**state, "messages": response, "helpdesk_agent_response": response}
 
 
 def chatdata_agent(state: AgentStateGraph):
@@ -118,20 +107,16 @@ def chatdata_agent(state: AgentStateGraph):
 
     # chatdata_agent_tools = []
     chatdata_llm_with_tools = llm
-
     chatdata_agent_runnable = chatdata_agent_prompt_template | chatdata_llm_with_tools
-
     response = chatdata_agent_runnable.invoke(state)
 
-    return {**state, "chatdata_agent_response": response}
+    return {**state, "messages": response, "chatdata_agent_response": response}
 
 
 def insights_agent(state: AgentStateGraph):
     # insights_agent_tools = []
     insights_llm_with_tools = llm
-
     insights_agent_runnable = insights_agent_prompt_template | insights_llm_with_tools
-
     response = insights_agent_runnable.invoke(
         {
             "crm_agent_response": state.get("crm_agent_response", ""),
