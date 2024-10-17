@@ -2,7 +2,14 @@ from langchain_openai import ChatOpenAI
 from langchain_core.runnables.config import RunnableConfig
 from langchain_core.messages import ToolMessage
 from state import AgentStateGraph
-from tools import ToCRMAgent, ToChatDataAgent, ToCSMAgent, ToHelpDeskAgent
+from tools import (
+    ToCRMAgent,
+    ToChatDataAgent,
+    ToCSMAgent,
+    ToHelpDeskAgent,
+    fetch_hubspot_contacts,
+    fetch_hubspot_deals,
+)
 from prompts import (
     query_agent_prompt_template,
     crm_agent_prompt_template,
@@ -45,17 +52,26 @@ def query_agent(state: AgentStateGraph):
     return {**state, "messages": response}
 
 
-def crm_agent(state: AgentStateGraph):
-    # Append a tool message to the last route from query agent
-    last_tool_call_id = state["messages"][-1].tool_calls[0]["id"]
-    query_route_tool_message = ToolMessage(
-        tool_call_id=last_tool_call_id,
-        content="The CRM Agent will now look for information in the CRM data.",
-    )
-    state["messages"].append(query_route_tool_message)
+# CRM Agent
 
-    # crm_agent_tools = []
-    crm_llm_with_tools = llm
+crm_agent_tools = [fetch_hubspot_contacts, fetch_hubspot_deals]
+
+
+def crm_agent(state: AgentStateGraph):
+    # Append a tool message to the last route from query agent if toll_calls exists
+    if (
+        not isinstance(state["messages"][-1], ToolMessage)
+        and state["messages"][-1].tool_calls
+    ):
+        last_tool_call_id = state["messages"][-1].tool_calls[0]["id"]
+        query_route_tool_message = ToolMessage(
+            tool_call_id=last_tool_call_id,
+            content="The CRM Agent will now look for information in the CRM data.",
+        )
+        state["messages"].append(query_route_tool_message)
+
+    crm_llm_with_tools = llm.bind_tools(crm_agent_tools)
+
     crm_agent_runnable = crm_agent_prompt_template | crm_llm_with_tools
     response = crm_agent_runnable.invoke(state)
 

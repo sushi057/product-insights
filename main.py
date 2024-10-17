@@ -17,7 +17,7 @@ while True:
     user_input = input("User: ")
 
     if user_input in ["q", "quit", "exit"]:
-        print("goodbye")
+        print("goodbye")    
         break
 
     for event in graph.stream(
