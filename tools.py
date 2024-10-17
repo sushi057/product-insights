@@ -60,13 +60,10 @@ class ToChatDataAgent(BaseModel):
 
 
 # CRM Agent Tools
-@tool("hubspot contacts")
-def fetch_hubspot_contacts(hubspot_id: str):
+@tool()
+def fetch_hubspot_contacts():
     """
     Fetch HubSpot contacts for the given HubSpot ID.
-
-    Args:
-        hubspot_id (str): The HubSpot ID of the customer.
 
     Returns:
         str: The response message.
@@ -77,12 +74,16 @@ def fetch_hubspot_contacts(hubspot_id: str):
             f"{hubspot_api}/contacts",
             headers=hubspot_headers,
         )
+        print(response.json())
         return response.json()
     except Exception as e:
         return f"Error fetching HubSpot contacts: {e}"
 
 
-@tool("hubspot deals")
+# print(fetch_hubspot_contacts())
+
+
+@tool()
 def fetch_hubspot_deals(hubspot_id: str):
     """
     Fetch HubSpot deals for the given HubSpot ID.
